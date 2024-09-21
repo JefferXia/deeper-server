@@ -5,7 +5,7 @@ import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import logger from '../utils/logger';
 import handleVideoSearch from '../agents/videoSearchAgent';
 import db from '../db/index';
-import { eq } from 'drizzle-orm';
+import { eq, asc, desc } from 'drizzle-orm';
 import { videos } from '../db/schema';
 
 const router = express.Router();
@@ -48,19 +48,20 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (_, res) => {
   try {
-    let videos = await db.query.videos.findMany({
+    let videoList = await db.query.videos.findMany({
       columns: {
         id: true,
         url: true,
         title: true,
         extractor: true,
-        metadata: true
-      }
+        metadata: true,
+        createdAt: true
+      },
+      orderBy: [desc(videos.createdAt)],
+      limit: 20
     });
 
-    videos = videos.reverse();
-
-    return res.status(200).json({ videos: videos });
+    return res.status(200).json({ videos: videoList });
   } catch (err) {
     res.status(500).json({ message: 'An error has occurred.' });
     logger.error(`Error in getting videos: ${err.message}`);

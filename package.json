@@ -1,8 +1,8 @@
 {
-  "name": "perplexica-backend",
-  "version": "1.9.0-rc2",
+  "name": "digany-backend",
+  "version": "1.0.0",
   "license": "MIT",
-  "author": "ItzCrazyKns",
+  "author": "Jeffer",
   "scripts": {
     "start": "npm run db:push && node dist/app.js",
     "build": "tsc",
