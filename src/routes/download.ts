@@ -8,8 +8,7 @@ import { videos } from '../db/schema';
 import crypto from 'crypto';
 import getKeyframes from '../lib/getKeyframes';
 import parseSubtitles from '../lib/parseSubtitles';
-import processVideoToAudio from '../lib/processVideoToAudio';
-import { useTecentAsr } from "../lib/asr";
+import cosUpload from "../lib/uploadFile"
 import YTDlpWrap from '../lib/ytdlp';
 const ytDlpWrap = new YTDlpWrap();
 
@@ -52,6 +51,9 @@ router.post('/', async (req, res) => {
     if(!metadata) {
       return res.status(404).json({ message: '提取不到视频信息' });
     }
+    if(metadata.duration > 300) {
+      return res.status(400).json({ message: '视频长度不能超过5分钟哦' });
+    }
     const videoExists = await db.query.videos.findFirst({
       where: eq(videos.videoId, metadata.id),
     });
@@ -68,11 +70,12 @@ router.post('/', async (req, res) => {
       await ytDlpWrap.execPromise(params);
       id = crypto.randomBytes(7).toString('hex');
       console.log('插入数据库', id)
+      const videoLocation = await cosUpload(`${downloadsPath}/${metadata.id}/video.mp4`, `videos/${id}.mp4`);
       await db
         .insert(videos)
         .values({
           id,
-          url: `${req.headers.host}/static/downloads/${metadata.id}/video.mp4`,
+          url: videoLocation || `${req.headers.host}/static/downloads/${metadata.id}/video.mp4`,
           videoId: metadata.id,
           title: metadata.title,
           extractor: metadata.extractor,
@@ -138,26 +141,6 @@ router.post('/', async (req, res) => {
     //   }
     // });
 
-    // const result:any = await processVideoToAudio({
-    //   filePath: `${downloadsPath}/${metadata.id}`,
-    //   fileName: metadata.id
-    // })
-
-    // if(result?.audioLocation) {
-    //   const audioInfo = await useTecentAsr(`https://${result.audioLocation}`);
-      
-    //   // if (audioInfo) {
-    //     await db.update(videos)
-    //       .set({
-    //         url: result.videoLocation,
-    //         audioUrl: result.audioLocation,
-    //         subtitles: JSON.stringify(audioInfo),
-    //       })
-    //       .where(eq(videos.id, id))
-    //       .execute();
-          
-    //   // }
-    // }
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(`Error in generating summary: ${err.message}`);

@@ -46,6 +46,27 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/', async (_, res) => {
+  try {
+    let videos = await db.query.videos.findMany({
+      columns: {
+        id: true,
+        url: true,
+        title: true,
+        extractor: true,
+        metadata: true
+      }
+    });
+
+    videos = videos.reverse();
+
+    return res.status(200).json({ videos: videos });
+  } catch (err) {
+    res.status(500).json({ message: 'An error has occurred.' });
+    logger.error(`Error in getting videos: ${err.message}`);
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const videoExists = await db.query.videos.findFirst({

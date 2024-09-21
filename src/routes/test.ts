@@ -4,11 +4,28 @@ import db from '../db/index';
 import { eq } from 'drizzle-orm';
 import { videos } from '../db/schema';
 import crypto from 'crypto';
+const ffmpeg:any = require('fluent-ffmpeg');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (_, res) => {
+  ffmpeg('/tmp/downloads/video.mp4')
+    .outputOptions('-map 0:s:0') // 指定提取第一个字幕流
+    .output('/tmp/downloads/subtitle.vtt')
+    .on('end', () => {
+        console.log('Subtitle extraction completed.');
+        res.status(200).json({ message: 'ok' });
+    })
+    .on('error', (err) => {
+        console.error('Error extracting subtitle:', err.message);
+        res.status(400).json({ message: 'fail' });
+    })
+    .run();
+});
+
+router.get('/:id', async (req, res) => {
   try {
+    // req.params.id
     const id = crypto.randomBytes(7).toString('hex');
     await db
       .insert(videos)
