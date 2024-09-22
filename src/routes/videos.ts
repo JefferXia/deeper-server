@@ -5,7 +5,7 @@ import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import logger from '../utils/logger';
 import handleVideoSearch from '../agents/videoSearchAgent';
 import db from '../db/index';
-import { eq, asc, desc } from 'drizzle-orm';
+import { eq, or, desc, sql } from 'drizzle-orm';
 import { videos } from '../db/schema';
 
 const router = express.Router();
@@ -48,16 +48,21 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (_, res) => {
   try {
-    let videoList = await db.query.videos.findMany({
+    let videoList:any = await db.query.videos.findMany({
+      where: or(eq(videos.extractor, "TikTok"), eq(videos.extractor, "douyin")),
       columns: {
         id: true,
         url: true,
         title: true,
         extractor: true,
+        likeCount: true,
         metadata: true,
         createdAt: true
       },
-      orderBy: [desc(videos.createdAt)],
+      // extras: {
+      //   metaData: sql<Object>`jsonb(${videos.metadata}) as meta_data`,
+      // },
+      orderBy: [desc(videos.likeCount)],
       limit: 20
     });
 

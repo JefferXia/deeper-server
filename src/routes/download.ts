@@ -79,6 +79,7 @@ router.post('/', async (req, res) => {
           videoId: metadata.id,
           title: metadata.title,
           extractor: metadata.extractor,
+          likeCount: metadata.like_count,
           metadata: JSON.stringify({
             fulltitle: metadata.fulltitle,
             description: metadata.description,
@@ -100,7 +101,7 @@ router.post('/', async (req, res) => {
             duration: metadata.duration,
             aspect_ratio: metadata.aspect_ratio,
           }),
-          createdAt: new Date().toString()
+          createdAt: Date.now()
         })
         .execute();
 
@@ -124,14 +125,12 @@ router.post('/', async (req, res) => {
 
     const subtitlesData = await parseSubtitles(`${downloadsPath}/${metadata.id}/subs`);
 
-    if(subtitlesData) {
-      await db.update(videos)
-        .set({
-          subtitles: JSON.stringify(subtitlesData),
-        })
-        .where(eq(videos.id, id))
-        .execute();
-    }
+    await db.update(videos)
+      .set({
+        subtitles: subtitlesData ? JSON.stringify(subtitlesData) : JSON.stringify({result: '',resultDetail: []}),
+      })
+      .where(eq(videos.id, id))
+      .execute();
 
     // fs.rm(`${downloadsPath}/${metadata.id}`, { recursive: true, force: true }, (err) => {
     //   if (err) {

@@ -56,6 +56,7 @@ router.post('/', async (req, res) => {
     const videoExists = await db.query.videos.findFirst({
       where: eq(videos.videoId, metadata.aweme_id),
     });
+    const videoPath = path.join(downloadsPath, metadata.aweme_id+'');
     let id = '';
     // 如果提取过直接返回id
     if (videoExists) {
@@ -63,7 +64,6 @@ router.post('/', async (req, res) => {
       return res.status(200).json({ id: videoExists.id });
     } else {
       id = crypto.randomBytes(7).toString('hex');
-      const videoPath = path.join(downloadsPath, metadata.aweme_id+'');
       fs.mkdirSync(videoPath, { recursive: true });
       const downloadList = metadata.video?.download_addr?.url_list;
       if(downloadList?.length>0) {
@@ -92,10 +92,14 @@ router.post('/', async (req, res) => {
         .values({
           id,
           url: `${req.headers.host}/static/downloads/${metadata.aweme_id}/video.mp4`,
+          audioUrl: metadata.music?.play_url?.uri,
           videoId: metadata.aweme_id,
           title: metadata.item_title,
           extractor: 'douyin',
+          likeCount: metadata.statistics?.digg_count,
           metadata: JSON.stringify({
+            avatar: metadata.author?.avatar_thumb?.url_list[0],
+            cover: metadata.video?.cover?.url_list[0],
             fulltitle: metadata.desc,
             original_url: url,
             tags: metadata.caption,
@@ -107,12 +111,12 @@ router.post('/', async (req, res) => {
             uploader: metadata.author?.nickname,
             uploader_id: metadata.author_user_id,
             uploader_url: `https://www.douyin.com/user/${metadata.author.sec_uid}`,
-            upload_date: metadata.create_time?.toString(),
+            upload_date: metadata.create_time,
             fps: 30,
             ext: metadata.video?.format,
             duration: metadata.duration ? Math.round(metadata.duration/1000) : 0,
           }),
-          createdAt: new Date().toString()
+          createdAt: Date.now()
         })
         .execute();
 
@@ -121,16 +125,25 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const subtitlesData = await parseSubtitles(`${downloadsPath}/${metadata.aweme_id}/subs`);
+    // const result:any = await processVideoToAudio({
+    //   filePath: videoPath,
+    //   fileName: id
+    // })
 
-    if(subtitlesData) {
-      await db.update(videos)
-        .set({
-          subtitles: JSON.stringify(subtitlesData),
-        })
-        .where(eq(videos.id, id))
-        .execute();
-    }
+    // if(result?.audioLocation) {
+      const audioInfo = await useTecentAsr(metadata.music?.play_url?.uri);
+      
+      if (audioInfo) {
+        await db.update(videos)
+          .set({
+            // url: result.videoLocation,
+            // audioUrl: result.audioLocation,
+            subtitles: JSON.stringify(audioInfo),
+          })
+          .where(eq(videos.id, id))
+          .execute();
+      }
+    // }
 
     // fs.rm(`${downloadsPath}/${metadata.id}`, { recursive: true, force: true }, (err) => {
     //   if (err) {

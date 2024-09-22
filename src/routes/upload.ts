@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
             // videoId: metadata.id,
             // title: metadata.title,
             extractor: '自由创作',
-            createdAt: new Date().toString()
+            createdAt: Date.now()
           })
           .execute();
         

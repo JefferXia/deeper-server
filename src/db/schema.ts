@@ -26,6 +26,7 @@ export const videos = sqliteTable('videos', {
   chatId: text('chatId'),
   title: text('title'),
   extractor: text('extractor'),
+  likeCount: integer('likeCount'),
   metadata: text('metadata', {
     mode: 'json',
   }),
@@ -36,5 +37,5 @@ export const videos = sqliteTable('videos', {
     mode: 'json',
   }),
   summary: text('summary'),
-  createdAt: text('createdAt').notNull(),
+  createdAt: integer('createdAt').notNull(),
 });
