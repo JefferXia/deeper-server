@@ -12,7 +12,7 @@ import processVideoToAudio from '../lib/processVideoToAudio';
 import { useTecentAsr } from "../lib/asr";
 const router = express.Router();
 
-const uploadsPath = path.join(__dirname, '../public/uploads');
+const uploadsPath = path.join(__dirname, '../../public/uploads');
 router.post('/', async (req, res) => {
   try { 
     const id = crypto.randomBytes(7).toString('hex');
@@ -88,7 +88,8 @@ router.post('/', async (req, res) => {
               .where(eq(videos.id, id))
               .execute();
               
-            // fs.unlink(`./temp/downloads/${metadata.id}`)
+            fs.rm(`${uploadsPath}/${id}/video.mp4`, { recursive: true, force: true }, (err) => {});
+            fs.rm(`${uploadsPath}/${id}/audio.wav`, { recursive: true, force: true }, (err) => {});
           }
         }
       })()

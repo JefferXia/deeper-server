@@ -9,7 +9,6 @@ import summaryRouter from './summary';
 import downloadRouter from './download';
 import dydownloadRouter from './dydownload';
 import uploadRouter from './upload';
-import testRouter from './test';
 
 const router = express.Router();
 
@@ -23,6 +22,5 @@ router.use('/summary', summaryRouter);
 router.use('/ytdownload', downloadRouter);
 router.use('/dydownload', dydownloadRouter);
 router.use('/upload', uploadRouter);
-router.use('/test', testRouter);
 
 export default router;

@@ -34,7 +34,7 @@ const downloadVideo = async(url, filePath, callback) => {
 }
 
 const router = express.Router();
-const downloadsPath = '/tmp/downloads';
+const downloadsPath = path.join(__dirname, '../../public/downloads');
 router.post('/', async (req, res) => {
   try {
     let { url } = req.body;
@@ -83,6 +83,13 @@ router.post('/', async (req, res) => {
               .where(eq(videos.id, id))
               .execute();
           }
+          fs.rm(`${videoPath}/video.mp4`, { recursive: true, force: true }, (err) => {
+            if (err) {
+              console.error('Error removing video:', err);
+            } else {
+              console.log('video removed successfully!');
+            }
+          });
         });
       } 
 
@@ -144,14 +151,6 @@ router.post('/', async (req, res) => {
           .execute();
       }
     // }
-
-    // fs.rm(`${downloadsPath}/${metadata.id}`, { recursive: true, force: true }, (err) => {
-    //   if (err) {
-    //     console.error('Error removing directory:', err);
-    //   } else {
-    //     console.log('Directory removed successfully!');
-    //   }
-    // });
 
   } catch (err) {
     res.status(500).json({ message: err.message });

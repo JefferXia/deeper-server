@@ -13,7 +13,7 @@ import YTDlpWrap from '../lib/ytdlp';
 const ytDlpWrap = new YTDlpWrap();
 
 const router = express.Router();
-const downloadsPath = path.join(__dirname, '../public/downloads');
+const downloadsPath = path.join(__dirname, '../../public/downloads');
 router.post('/', async (req, res) => {
   try {
     let { url } = req.body;
@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
       url,
       '-S',
       'ext',
-      '--proxy=http://127.0.0.1:8118'
+      // '--proxy=http://127.0.0.1:8118'
     ];
     let params = [
       url,
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
       '--write-subs',
       // '--sub-langs',
       // 'zh,en',
-      '--proxy=http://127.0.0.1:8118'
+      // '--proxy=http://127.0.0.1:8118'
     ];
     if(url.indexOf('bilibili.com') > -1) {
       params = [
@@ -132,13 +132,13 @@ router.post('/', async (req, res) => {
       .where(eq(videos.id, id))
       .execute();
 
-    // fs.rm(`${downloadsPath}/${metadata.id}`, { recursive: true, force: true }, (err) => {
-    //   if (err) {
-    //     console.error('Error removing directory:', err);
-    //   } else {
-    //     console.log('Directory removed successfully!');
-    //   }
-    // });
+    fs.rm(`${downloadsPath}/${metadata.id}/video.mp4`, { recursive: true, force: true }, (err) => {
+      if (err) {
+        console.error('Error removing directory:', err);
+      } else {
+        console.log('Directory removed successfully!');
+      }
+    });
 
   } catch (err) {
     res.status(500).json({ message: err.message });

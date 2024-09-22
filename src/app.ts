@@ -23,7 +23,7 @@ app.use('/api', routes);
 app.get('/api', (_, res) => {
   res.status(200).json({ status: 'ok' });
 });
-app.use('/static', express.static(path.join(__dirname, 'public')));
+app.use('/static', express.static(path.join(__dirname, '../public')));
 
 server.listen(port, () => {
   logger.info(`Server is running on port ${port}`);

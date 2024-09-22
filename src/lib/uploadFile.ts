@@ -29,10 +29,10 @@ export default async function cosUpload(file: string, fileName: string) {
 
   try {
     const data = await cos.uploadFile(params);
-    console.log("上传成功", data);
+    console.log("cos上传成功");
     return data?.Location
   } catch (error) {
-    console.error("上传失败", error);
+    console.error("cos上传失败", error);
     return ''
   }
 }
