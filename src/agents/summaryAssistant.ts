@@ -53,6 +53,8 @@ Rephrased:
 - 长期服用药物
 - 饮酒
 
+Please match the language of the response to the user's language.
+
 Conversation:
 {chat_history}
 

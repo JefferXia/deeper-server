@@ -15,11 +15,15 @@ const getKeyframes = async ({
     fs.mkdirSync(framesPath, { recursive: true });
     ffmpeg(`${filePath}/video.mp4`)
       .outputOptions([
-        '-vf', 'select=eq(pict_type\\,I)', // 选择关键帧
-        '-vsync', 'vfr',
-        '-frame_pts', 'true'
+        '-vf',
+        'select=eq(pict_type\\,I),scale=640:-1', // 选择关键帧
+        '-vsync',
+        'vfr',
+        '-frame_pts',
+        'true',
+        '-q:v', '5'
       ])
-      .output(`${framesPath}/frame-%04d.png`)
+      .output(`${framesPath}/frame-%04d.jpg`)
       .on('end', () => {
         fs.readdir(framesPath, (err, files) => {
           if (err) {
@@ -27,18 +31,18 @@ const getKeyframes = async ({
           }
           const frames = [];
           const frameRate = 30; // 帧率
-          // const pngFiles = files.filter(file => file.endsWith('.png') && file.startsWith('frame-'));  
+          // const jpgFiles = files.filter(file => file.endsWith('.jpg') && file.startsWith('frame-'));  
           // 遍历文件
           files.forEach((file, index) => {
             // 提取帧数
-            const frameNumber = parseInt(file.match(/frame-(\d+)\.png/)[1], 10);
+            const frameNumber = parseInt(file.match(/frame-(\d+)\.jpg/)[1], 10);
             
             // 计算时间（秒）
             const startTime = Math.floor(frameNumber / frameRate);
             
             // 计算结束时间
             const endTime = index < files.length - 1 
-              ? Math.floor(parseInt(files[index + 1].match(/frame-(\d+)\.png/)[1], 10) / frameRate)
+              ? Math.floor(parseInt(files[index + 1].match(/frame-(\d+)\.jpg/)[1], 10) / frameRate)
               : startTime + 1;
 
             frames.push({
