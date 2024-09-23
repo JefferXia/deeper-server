@@ -49,26 +49,26 @@ const pullRecTask = async (TaskId: any) => {
         endTime: formatTime(item.EndMs),
       }));
 
-      // const mergedData = extractedDetails.reduce((acc: any, current: any) => {
-      //   if (acc.length === 0) {
-      //     acc.push({ ...current });
-      //   } else {
-      //     let lastChar = acc[acc.length-1].text.slice(-1);
-      //     if(lastChar === '，' || lastChar === '、') {           
-      //       acc[acc.length-1].text += current.text; // 组合句子
-      //       acc[acc.length-1].endMs = current.endMs
-      //       acc[acc.length-1].endTime = current.endTime
-      //     } else {
-      //       acc.push({ ...current });
-      //     }
-      //   }
+      const mergedData = extractedDetails.reduce((acc: any, current: any) => {
+        if (acc.length === 0) {
+          acc.push({ ...current });
+        } else {
+          let lastChar = acc[acc.length-1].text.slice(-1);
+          if(lastChar === '、') {           
+            acc[acc.length-1].text += current.text; // 组合句子
+            acc[acc.length-1].endMs = current.endMs
+            acc[acc.length-1].endTime = current.endTime
+          } else {
+            acc.push({ ...current });
+          }
+        }
       
-      //   return acc;
-      // }, []);
+        return acc;
+      }, []);
 
       return {
         result: Result,
-        resultDetail: extractedDetails
+        resultDetail: mergedData
       }
     } else if (Status === 3) {
       console.log("提取失败");
