@@ -12,11 +12,11 @@ const port = getPort();
 const app = express();
 const server = http.createServer(app);
 
-const corsOptions = {
-  origin: '*',
-};
+// const corsOptions = {
+//   origin: '*',
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/api', routes);
