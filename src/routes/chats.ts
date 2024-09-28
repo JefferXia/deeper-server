@@ -7,7 +7,7 @@ import { chats, messages } from '../db/schema';
 const router = express.Router();
 
 router.get('/', async (_, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=59');
+  res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=59');
   try {
     let chats = await db.query.chats.findMany();
 
