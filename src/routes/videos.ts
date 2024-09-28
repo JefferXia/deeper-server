@@ -47,6 +47,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (_, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=59');
   try {
     let videoList:any = await db.query.videos.findMany({
       where: or(eq(videos.extractor, "TikTok"), eq(videos.extractor, "douyin")),
