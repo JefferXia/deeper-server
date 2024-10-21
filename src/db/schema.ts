@@ -37,5 +37,6 @@ export const videos = sqliteTable('videos', {
     mode: 'json',
   }),
   summary: text('summary'),
+  userId: text('userId'),
   createdAt: integer('createdAt').notNull(),
 });

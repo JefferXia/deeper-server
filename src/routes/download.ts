@@ -16,7 +16,7 @@ const router = express.Router();
 const downloadsPath = path.join(__dirname, '../../public/downloads');
 router.post('/', async (req, res) => {
   try {
-    let { url } = req.body;
+    let { url, userId } = req.body;
 
     let infoParams = [
       url,
@@ -101,6 +101,7 @@ router.post('/', async (req, res) => {
             duration: metadata.duration,
             aspect_ratio: metadata.aspect_ratio,
           }),
+          userId,
           createdAt: Date.now()
         })
         .execute();

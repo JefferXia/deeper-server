@@ -37,7 +37,7 @@ const router = express.Router();
 const downloadsPath = path.join(__dirname, '../../public/downloads');
 router.post('/', async (req, res) => {
   try {
-    let { url } = req.body;
+    let { url, userId } = req.body;
     const dyres = await fetch(`http://45.55.255.120/api/hybrid/video_data?url=${url}`, {
       method: 'GET',
       headers: {
@@ -123,6 +123,7 @@ router.post('/', async (req, res) => {
             ext: metadata.video?.format,
             duration: metadata.duration ? Math.round(metadata.duration/1000) : 0,
           }),
+          userId,
           createdAt: Date.now()
         })
         .execute();
