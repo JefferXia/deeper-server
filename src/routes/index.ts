@@ -10,6 +10,7 @@ import downloadRouter from './download';
 import dydownloadRouter from './dydownload';
 import uploadRouter from './upload';
 import deleteRouter from './delete';
+import myvideosRouter from './myvideos';
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/ytdownload', downloadRouter);
 router.use('/dydownload', dydownloadRouter);
 router.use('/upload', uploadRouter);
 router.use('/delete91289839', deleteRouter);
+router.use('/myvideos', myvideosRouter);
 
 export default router;
