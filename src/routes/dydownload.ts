@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
     // 如果提取过直接返回id
     if (videoExists) {
       id = videoExists.id;
-      return res.status(200).json({ id: videoExists.id });
+      return res.status(200).json({ id: videoExists.id, exist: true });
     } else {
       id = crypto.randomBytes(7).toString('hex');
       fs.mkdirSync(videoPath, { recursive: true });
@@ -133,25 +133,16 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // const result:any = await processVideoToAudio({
-    //   filePath: videoPath,
-    //   fileName: id
-    // })
-
-    // if(result?.audioLocation) {
-      const audioInfo = await useTecentAsr(metadata.music?.play_url?.uri);
-      
-      if (audioInfo) {
-        await db.update(videos)
-          .set({
-            // url: result.videoLocation,
-            // audioUrl: result.audioLocation,
-            subtitles: JSON.stringify(audioInfo),
-          })
-          .where(eq(videos.id, id))
-          .execute();
-      }
-    // }
+    const audioInfo = await useTecentAsr(metadata.music?.play_url?.uri);
+    
+    if (audioInfo) {
+      await db.update(videos)
+        .set({
+          subtitles: JSON.stringify(audioInfo),
+        })
+        .where(eq(videos.id, id))
+        .execute();
+    }
 
   } catch (err) {
     res.status(500).json({ message: err.message });

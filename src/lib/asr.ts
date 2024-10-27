@@ -38,7 +38,7 @@ const pullRecTask = async (TaskId: any) => {
     } = data;
 
     if (Status === 2) {
-      console.log(Result);
+      // console.log(Result);
       // console.log("\n------------------------\n");
       // console.log(ResultDetail);
       const extractedDetails = ResultDetail.map((item: any) => ({
